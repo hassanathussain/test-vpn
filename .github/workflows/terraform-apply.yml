@@ -1,4 +1,4 @@
-name: Terraform Deploy
+name: Terraform Apply
 
 on:
   push:
@@ -7,12 +7,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  terraform:
-    name: 'Terraform Apply'
+  terraform-apply:
     runs-on: ubuntu-latest
 
     env:
-      AWS_REGION: us-east-2   # update if needed
+      AWS_REGION: us-east-2
 
     steps:
     - name: Checkout repo
