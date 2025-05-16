@@ -45,7 +45,7 @@ jobs:
         echo "$(terraform output -raw ec2_public_ip)" > ec2_ip.txt
 
     - name: Upload EC2 IP as artifact
-      uses: actions/upload-artifact@v3.1.3
+      uses: actions/upload-artifact@v2
       with:
         name: ec2-ip
         path: ./terraform/ec2_ip.txt
