@@ -40,8 +40,9 @@ jobs:
       run: terraform apply -auto-approve
 
     - name: Save EC2 public IP to file
-      run: echo "$(terraform output -raw ec2_public_ip)" > ec2_ip.txt
       working-directory: ./terraform
+      run: |
+        echo "$(terraform output -raw ec2_public_ip)" > ec2_ip.txt
 
     - name: Upload EC2 IP as artifact
       uses: actions/upload-artifact@v3
