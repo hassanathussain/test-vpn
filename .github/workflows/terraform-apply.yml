@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'terraform/**'
+    # To avoid infinite loops, do NOT run on pushes to the update branch
+    branches-ignore:
+      - update-ec2-ip
   workflow_dispatch:
 
 jobs:
@@ -18,7 +21,10 @@ jobs:
 
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
+      # Fetch all branches for pushing to update-ec2-ip
+      with:
+        fetch-depth: 0
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
@@ -41,10 +47,14 @@ jobs:
 
     - name: Save EC2 public IP to file
       working-directory: ./terraform
-      run: echo "$(terraform output -raw ec2_public_ip)" > ec2_ip.txt
+      run: |
+        terraform output -raw ec2_public_ip > ec2_ip.txt
 
-    - name: Upload EC2 IP as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ec2-ip
-        path: ./terraform/ec2_ip.txt
+    - name: Commit and push EC2 IP to dedicated branch
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git checkout -B update-ec2-ip
+        git add terraform/ec2_ip.txt
+        git commit -m "Update EC2 public IP"
+        git push --force origin update-ec2-ip

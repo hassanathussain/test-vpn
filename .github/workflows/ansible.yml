@@ -1,11 +1,11 @@
 name: Ansible Provision
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ["Terraform Deploy"]
     types:
       - completed
-  workflow_dispatch:
 
 jobs:
   ansible:
@@ -13,18 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Download EC2 IP artifact
-        uses: actions/download-artifact@v4
+      - name: Checkout update branch
+        uses: actions/checkout@v3
         with:
-          name: ec2-ip
+          ref: update-ec2-ip
+          fetch-depth: 1
 
-      - name: Read EC2 public IP
+      - name: Read EC2 public IP from file
         id: read_ip
         run: |
-          IP=$(cat ec2_ip.txt)
+          IP=$(cat terraform/ec2_ip.txt)
           echo "EC2_IP=$IP" >> $GITHUB_ENV
 
       - name: Create private key file
