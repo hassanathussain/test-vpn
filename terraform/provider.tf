@@ -6,13 +6,12 @@ terraform {
     }
   }
 
-  # Optional backend for remote state (commented out)
-  # backend "s3" {
-  #   bucket         = "verquin-terraform-states"
-  #   key            = "networking/terraform.tfstate"
-  #   region         = "us-east-2"
-  #   dynamodb_table = "dynamodb-state-locking"
-  # }
+  backend "s3" {
+    bucket = "my-terraform-state-bucket-76474"
+    key    = "networking/terraform.tfstate"
+    region = "us-east-2"
+    encrypt = true
+  }
 }
 
 provider "aws" {
