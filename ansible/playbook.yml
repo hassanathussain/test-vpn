@@ -1,0 +1,24 @@
+---
+- name: Configure EC2 instance with NGINX and deploy website
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Install NGINX
+      yum:
+        name: nginx
+        state: present
+
+    - name: Start and enable NGINX service
+      systemd:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Copy sample index.html to nginx web root
+      copy:
+        src: files/index.html
+        dest: /usr/share/nginx/html/index.html
+        owner: nginx
+        group: nginx
+        mode: '0644'
