@@ -1,0 +1,39 @@
+name: Ansible Provision
+
+on:
+  workflow_run:
+    workflows: ["Terraform Deploy"]
+    types:
+      - completed
+
+jobs:
+  ansible:
+    name: Configure EC2 with Ansible
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Download EC2 IP artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ec2-ip
+
+    - name: Read EC2 public IP
+      id: read_ip
+      run: |
+        IP=$(cat ec2_ip.txt)
+        echo "EC2_IP=$IP" >> $GITHUB_ENV
+
+    - name: Create private key file
+      run: |
+        echo "${{ secrets.ANSIBLE_PRIVATE_KEY }}" > cicd.pem
+        chmod 600 cicd.pem
+
+    - name: Run Ansible Playbook
+      run: |
+        ansible-playbook ansible/playbook.yml \
+          -i "$EC2_IP," \
+          --private-key cicd.pem \
+          -u ec2-user
