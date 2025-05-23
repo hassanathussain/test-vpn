@@ -7,9 +7,9 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "my-terraform-state-bucket-76474"
-    key    = "networking/terraform.tfstate"
-    region = "us-east-2"
+    bucket  = "my-terraform-state-bucket-76474"
+    key     = "networking/terraform.tfstate"
+    region  = "us-east-2"
     encrypt = true
   }
 }
