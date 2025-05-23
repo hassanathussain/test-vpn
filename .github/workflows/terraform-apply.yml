@@ -4,14 +4,13 @@ on:
   push:
     paths:
       - 'terraform/**'
-    # Avoid infinite loop by skipping the update branch
     branches-ignore:
       - update-ec2-ip
   workflow_dispatch:
 
 jobs:
   terraform:
-    name: 'Terraform Apply'
+    name: Terraform Apply
     runs-on: ubuntu-latest
 
     env:
@@ -20,49 +19,47 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0  # Needed for pushing to branches
-        token: ${{ secrets.GH_PAT }}  # <-- Add this to authenticate git commands properly
+      - name: Checkout repo with PAT token
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
 
-    - name: Terraform Init
-      working-directory: ./terraform
-      run: terraform init
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
 
-    - name: Terraform Format Check
-      working-directory: ./terraform
-      run: terraform fmt -check -recursive
+      - name: Terraform Format Check
+        working-directory: ./terraform
+        run: terraform fmt -check -recursive
 
-    - name: Terraform Validate
-      working-directory: ./terraform
-      run: terraform validate
+      - name: Terraform Validate
+        working-directory: ./terraform
+        run: terraform validate
 
-    - name: Terraform Plan
-      working-directory: ./terraform
-      run: terraform plan
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: terraform plan
 
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/main'
-      working-directory: ./terraform
-      run: terraform apply -auto-approve
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
 
-    - name: Save EC2 public IP to file
-      if: github.ref == 'refs/heads/main'
-      working-directory: ./terraform
-      run: terraform output -raw ec2_public_ip > ec2_ip.txt
+      - name: Save EC2 public IP to file
+        if: github.ref == 'refs/heads/main'
+        working-directory: ./terraform
+        run: terraform output -raw ec2_public_ip > ec2_ip.txt
 
-    - name: Commit and push EC2 IP to dedicated branch
-      if: github.ref == 'refs/heads/main'
-      env:
-        GH_PAT: ${{ secrets.GH_PAT }}
-      run: |
-        git config user.name "hassanathussain"
-        git config user.email "hussainhassanat08@gmail.com"
-        git checkout -B update-ec2-ip
-        git add terraform/ec2_ip.txt
-        git commit -m "Update EC2 public IP" || echo "No changes to commit"
-        git push --force https://x-access-token:${GH_PAT}@github.com/hassanathussain/test-vpn.git update-ec2-ip
+      - name: Commit and push EC2 IP to dedicated branch
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "hassanathussain"
+          git config user.email "hussainhassanat08@gmail.com"
+          git checkout -B update-ec2-ip
+          git add terraform/ec2_ip.txt
+          git commit -m "Update EC2 public IP" || echo "No changes to commit"
+          git push --force origin update-ec2-ip
