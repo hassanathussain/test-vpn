@@ -59,9 +59,9 @@ jobs:
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
       run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git config user.name "hassanathussain"
+        git config user.email "hussainhassanat08@gmail.com"
         git checkout -B update-ec2-ip
         git add terraform/ec2_ip.txt
-        git commit -m "Update EC2 public IP"
-        git push --force https://x-access-token:$GH_PAT@github.com/${{ github.repository }} update-ec2-ip
+        git commit -m "Update EC2 public IP" || echo "No changes to commit"
+        git push --force https://x-access-token:${GH_PAT}@github.com/hassanathussain/test-vpn.git update-ec2-ip

@@ -1,6 +1,6 @@
 ---
 - name: Configure EC2 instance with NGINX and deploy website
-  hosts: webservers
+  hosts: all
   become: yes
 
   tasks:
