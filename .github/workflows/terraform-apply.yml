@@ -52,7 +52,7 @@ jobs:
       - name: Save EC2 public IP to file
         if: github.ref == 'refs/heads/main'
         working-directory: ./terraform
-        run: terraform output -raw ec2_public_ip > /ec2_ip.txt
+        run: terraform output -raw ec2_public_ip > ec2_ip.txt
 
       - name: Commit and push EC2 IP to dedicated branch
         if: github.ref == 'refs/heads/main'
