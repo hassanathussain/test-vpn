@@ -24,7 +24,10 @@ jobs:
         run: |
           IP=$(cat terraform/ec2_ip.txt | head -n 1 | tr -d '\r\n')
           echo "EC2_IP=$IP" >> $GITHUB_ENV
-          echo "Read IP: $IP"
+          echo "::notice title=EC2 IP::${IP}"
+
+      - name: Confirm EC2_IP value
+        run: echo "Read EC2 IP: ${{ env.EC2_IP }}"
 
       - name: Create private key file
         run: |
@@ -38,6 +41,7 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
+          echo "Provisioning host: ${{ env.EC2_IP }}"
           ansible-playbook ansible/playbook.yml \
             -i "${{ env.EC2_IP }}," \
             --private-key cicd.pem \
