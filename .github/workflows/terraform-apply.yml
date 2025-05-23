@@ -52,7 +52,7 @@ jobs:
       - name: Save EC2 public IP to file
         if: github.ref == 'refs/heads/main'
         working-directory: ./terraform
-        run: terraform output -raw ec2_public_ip > ec2_ip.txt
+        run: terraform output -raw ec2_public_ip | head -n 1 > ec2_ip.txt
 
       - name: Commit and push EC2 IP to dedicated branch
         if: github.ref == 'refs/heads/main'
@@ -60,6 +60,6 @@ jobs:
           git config user.name "hassanathussain"
           git config user.email "hussainhassanat08@gmail.com"
           git checkout -B update-ec2-ip
-          git add terraform/ec2_ip.txt
+          git add terraform/ec2_ip.txt  
           git commit -m "Update EC2 public IP" || echo "No changes to commit"
           git push --force origin update-ec2-ip

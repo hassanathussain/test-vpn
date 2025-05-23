@@ -22,9 +22,12 @@ jobs:
       - name: Read EC2 public IP from file
         id: read_ip
         run: |
-          IP=$(cat terraform/ec2_ip.txt | tr -d '\r\n')
+          IP=$(head -n 1 terraform/ec2_ip.txt | tr -d '\r\n')
           echo "EC2_IP=$IP" >> $GITHUB_ENV
           echo "Read IP: $IP"
+
+      - name: Debug EC2 IP
+        run: echo "EC2 IP is '${{ env.EC2_IP }}'"
 
       - name: Create private key file
         run: |
