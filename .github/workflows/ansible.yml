@@ -24,7 +24,7 @@ jobs:
         run: |
           IP=$(cat terraform/ec2_ip.txt | head -n 1 | tr -d '\r\n')
           echo "Read IP: $IP"
-          echo "::set-output name=ec2_ip::$IP"
+          echo "ec2_ip=$IP" >> $GITHUB_OUTPUT
 
       - name: Create private key file
         run: |
