@@ -49,10 +49,12 @@ jobs:
       run: terraform output -raw ec2_public_ip > ec2_ip.txt
 
     - name: Commit and push EC2 IP to dedicated branch
+      env:
+      GH_PAT: ${{ secrets.GH_PAT }}
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git checkout -B update-ec2-ip
         git add terraform/ec2_ip.txt
         git commit -m "Update EC2 public IP"
-        git push --force https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }} update-ec2-ip
+        git push --force https://x-access-token:$GH_PAT@github.com/${{ github.repository }} update-ec2-ip
