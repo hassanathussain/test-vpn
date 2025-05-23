@@ -24,11 +24,17 @@ jobs:
         run: |
           IP=$(cat terraform/ec2_ip.txt)
           echo "EC2_IP=$IP" >> $GITHUB_ENV
+          echo "Read IP: $IP"
 
       - name: Create private key file
         run: |
           echo "${{ secrets.ANSIBLE_PRIVATE_KEY }}" > cicd.pem
           chmod 600 cicd.pem
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
 
       - name: Run Ansible Playbook
         run: |
