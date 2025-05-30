@@ -79,7 +79,6 @@ resource "aws_instance" "web" {
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.main.id
   vpc_security_group_ids      = [aws_security_group.main.id]
-  key_name                    = "cicd" # reference your existing AWS key
   associate_public_ip_address = true
 
   tags = merge(local.default_tags, {
